@@ -1,32 +1,22 @@
 # Buscador Carros Na Web
 
-Ferramenta para montar URLs de busca avançada no site [Carros Na Web](https://www.carrosnaweb.com.br/).
-
-![Screenshot do Buscador](screenshot.png)
-<!-- Substitua screenshot.png pelo nome do arquivo de imagem -->
-
-## Por que isso existe?
-
-O Carros Na Web tem um catálogo excelente, mas o formulário de busca avançada limita os valores a faixas pré-definidas. Por exemplo: peso/torque só aceita de 20 a 100 em intervalos de 5, porta-malas vai de 50 a 600 em incrementos de 50, e por aí vai.
-
-Felizmente, o site expõe os parâmetros na URL. Isso me permitiu documentar os filtros e criar essa ferramenta que dá controle total sobre cada valor — sem as limitações do formulário original.
+O [Carros Na Web] é um excelente portal de busca online para aqueles que estão procurando informações sobre carros, com dados detalhadas e imparciais de cada modelo. Embora poderosa, a pesquisa do site limita o usuário em alguns aspectos, como por exemplo criando faixas pré-definidas de valores para alguns parâmetros. Felizmente, o site expõe esses parâmetros na URL, o que permite documentar os filtros e fazer buscas personalizadas com controle total sobre cada valor, sem as limitações do formulário original do site. Esse site tem como objetivo facilitar a criação dessas buscas personalizadas.
 
 ## Como usar
 
-1. Abra o arquivo `index.html` no navegador (ou acesse online)
-2. Preencha os campos que desejar com os valores exatos
+1. Acesse o [site do projeto]
+2. Preencha os campos com os valores desejados
 3. A URL é gerada automaticamente conforme você preenche
-4. Clique em **Abrir Busca** ou escaneie o **QR Code** pelo celular
+4. Clique em **Abrir Busca** ou escaneie o **QR Code** para abrir pelo celular
 
-## Estrutura
+## Estrutura do repositório
 
 - `index.html` — a ferramenta em si (HTML + CSS + JS em arquivo único)
 - `parametros_de_busca.md` — documentação dos parâmetros disponíveis
-- `buscador-tema-neon.html` — tema alternativo (backup)
 
 ## Roadmap
 
-- [ ] Documentar mais parâmetros do site
+- [ ] Documentar e incluir mais parâmetros do site
 - [ ] Adicionar listas de sugestões para fabricantes, modelos, etc.
 - [ ] Salvar buscas favoritas no navegador (localStorage)
 - [ ] Histórico das últimas buscas
@@ -39,5 +29,7 @@ Felizmente, o site expõe os parâmetros na URL. Isso me permitiu documentar os 
 
 - Projeto pessoal para uso próprio, compartilhado caso seja útil para alguém
 - Os parâmetros documentados são os que mais me interessam; o site pode ter outros
-- O site Carros Na Web pode mudar sua estrutura a qualquer momento, o que quebraria a ferramenta
+- O site Carros Na Web pode mudar sua estrutura a qualquer momento, o que pode quebrar a ferramenta
 
+[Carros Na Web]: https://www.carrosnaweb.com.br/
+[site do projeto]: http://busca-carros.hdmj.fastmail.org
