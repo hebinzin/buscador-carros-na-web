@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador Carros Na Web</title>
+    <style>
+        :root {
+            --bg-page: #f0f0f0;
+            --bg-section: #ffffff;
+            --bg-input: #f8f8f8;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #555;
+            --text-muted: #888;
+            --border: #ddd;
+            --border-hover: #999;
+            --error: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-page);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .section {
+            background: var(--bg-section);
+            border-radius: 6px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            transition: border-color 0.15s ease;
+        }
+
+        .section:hover {
+            border-color: var(--border-hover);
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .field-group {
+            margin-bottom: 0.875rem;
+        }
+
+        .field-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 0.6rem 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.15s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2rem;
+        }
+
+        .range-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .checkbox-grid {
+            columns: 3;
+            column-gap: 0.5rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+            break-inside: avoid;
+            margin-bottom: 0.35rem;
+        }
+
+        .checkbox-item:hover {
+            background: var(--bg-input);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1px solid var(--border-hover);
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .checkbox-item input[type="checkbox"]:checked {
+            background: var(--accent);
+            border-color: var(--accent);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M10 3L4.5 8.5 2 6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .checkbox-item span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .url-section {
+            background: var(--bg-section);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .url-section h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .url-display {
+            background: var(--bg-input);
+            border-radius: 4px;
+            padding: 0.875rem;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            word-break: break-all;
+            max-height: 120px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            margin-bottom: 1.25rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.65rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-hover);
+            background: #eee;
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .btn-danger:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--text-primary);
+            color: white;
+            padding: 0.875rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .help-text {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
+        }
+
+        .qr-code-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.25rem;
+            padding-top: 1.25rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .qr-code-container img {
+            border-radius: 4px;
+            background: white;
+            padding: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .qr-code-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.25rem;
+            }
+
+            .checkbox-grid {
+                columns: 1;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .checkbox-grid {
+                columns: 2;
+            }
+        }
+
+        .about-section {
+            background: var(--bg-section);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .about-section summary {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: background-color 0.15s ease;
+            list-style: none;
+        }
+
+        .about-section summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .about-section summary::before {
+            content: '▸';
+            font-size: 0.9rem;
+            transition: transform 0.15s ease;
+        }
+
+        .about-section[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .about-section summary:hover {
+            background: var(--bg-input);
+        }
+
+        .about-content {
+            padding: 0 1rem 1rem 1rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .about-content p {
+            margin-bottom: 0.6rem;
+        }
+
+        .about-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .about-content strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Buscador Carros Na Web</h1>
+            <p>Monte sua busca personalizada com controle total sobre os parâmetros</p>
+        </header>
+
+        <details class="about-section">
+            <summary>Sobre esta ferramenta</summary>
+            <div class="about-content">
+                <p>
+                    O site <strong>Carros Na Web</strong> tem um catálogo excelente, mas o formulário de busca avançada 
+                    limita os valores a faixas pré-definidas. Por exemplo: peso/torque só aceita de 20 a 100 em intervalos 
+                    de 5, porta-malas vai de 50 a 600 em incrementos de 50, e por aí vai.
+                </p>
+                <p>
+                    Felizmente, o site expõe os parâmetros na URL. Isso me permitiu documentar os filtros que mais me 
+                    interessam e criar essa ferramenta que dá <strong>controle total sobre cada valor</strong> — sem as 
+                    limitações do formulário original.
+                </p>
+                <p>
+                    <strong>Como usar:</strong> preencha os campos desejados com os valores exatos, a URL é gerada 
+                    automaticamente. Clique em <strong>Abrir Busca</strong> para ir ao site ou escaneie o 
+                    <strong>QR Code</strong> pelo celular.
+                </p>
+            </div>
+        </details>
+
+        <div class="search-grid">
+            <!-- Identificação do Veículo -->
+            <div class="section">
+                <div class="section-title">Identificação</div>
+                
+                <div class="field-group">
+                    <label for="fabricante">Fabricante</label>
+                    <input type="text" id="fabricante" placeholder="Ex: Renault, Ford, Volkswagen">
+                </div>
+
+                <div class="field-group">
+                    <label for="varnome">Modelo</label>
+                    <input type="text" id="varnome" placeholder="Ex: Clio, Ka, Gol">
+                </div>
+
+                <div class="field-group">
+                    <label for="codigoMotor">Código do Motor</label>
+                    <input type="text" id="codigoMotor" placeholder="Ex: D4D, Sigma">
+                </div>
+
+                <div class="field-group">
+                    <label for="plataforma">Plataforma</label>
+                    <input type="text" id="plataforma" placeholder="Ex: B-Car, MQB">
+                </div>
+
+                <div class="field-group">
+                    <label for="geracao">Geração</label>
+                    <input type="number" id="geracao" placeholder="Ex: 3, 4, 5">
+                </div>
+            </div>
+
+            <!-- Preço e Ano -->
+            <div class="section">
+                <div class="section-title">Preço e Ano</div>
+                
+                <div class="field-group">
+                    <label>Faixa de Preço (R$)</label>
+                    <div class="range-group">
+                        <input type="number" id="valini" placeholder="Mínimo">
+                        <input type="number" id="valfim" placeholder="Máximo">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Ano do Modelo</label>
+                    <div class="range-group">
+                        <input type="number" id="anoini" placeholder="De" min="1950" max="2030">
+                        <input type="number" id="anofim" placeholder="Até" min="1950" max="2030">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="proced">Procedência</label>
+                    <select id="proced">
+                        <option value="">Qualquer</option>
+                        <option value="1">Nacional</option>
+                        <option value="2">Importado</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="vendaOficial">Disponível no Brasil</label>
+                    <select id="vendaOficial">
+                        <option value="">Qualquer</option>
+                        <option value="true">Sim</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Configuração -->
+            <div class="section">
+                <div class="section-title">Configuração</div>
+                
+                <div class="field-group">
+                    <label for="config">Tipo de Carroceria</label>
+                    <select id="config">
+                        <option value="">Qualquer</option>
+                        <option value="1">Hatchback</option>
+                        <option value="2">Sedã</option>
+                        <option value="3">Perua</option>
+                        <option value="7">SUV</option>
+                        <option value="9">Picape</option>
+                        <option value="11">Conversível</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="porte">Porte</label>
+                    <select id="porte">
+                        <option value="">Qualquer</option>
+                        <option value="4">Subcompacto</option>
+                        <option value="1">Compacto</option>
+                        <option value="5">Médio-compacto</option>
+                        <option value="2">Médio</option>
+                        <option value="3">Grande</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="portas">Número de Portas</label>
+                    <input type="number" id="portas" placeholder="Ex: 2, 4, 5" min="2" max="5">
+                </div>
+
+                <div class="field-group">
+                    <label for="passageiros">Mínimo de Passageiros</label>
+                    <input type="number" id="passageiros" placeholder="Ex: 4, 5, 7" min="2" max="9">
+                </div>
+
+                <div class="field-group">
+                    <label for="portamalas">Porta-malas Mínimo (L)</label>
+                    <input type="number" id="portamalas" placeholder="Ex: 250, 300, 400">
+                    <div class="help-text">Capacidade em litros</div>
+                </div>
+            </div>
+
+            <!-- Motor e Transmissão -->
+            <div class="section">
+                <div class="section-title">Motor e Transmissão</div>
+                
+                <div class="field-group">
+                    <label>Cilindradas (mL)</label>
+                    <div class="range-group">
+                        <input type="number" id="cilini" placeholder="Mínimo">
+                        <input type="number" id="cilfim" placeholder="Máximo">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="combustivel">Combustível</label>
+                    <select id="combustivel">
+                        <option value="">Qualquer</option>
+                        <option value="F">Flex</option>
+                        <option value="G">Gasolina</option>
+                        <option value="A">Álcool</option>
+                        <option value="D">Diesel</option>
+                        <option value="E">Elétrico</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="cambio">Câmbio</label>
+                    <select id="cambio">
+                        <option value="">Qualquer</option>
+                        <option value="1">Manual</option>
+                        <option value="2">Automático</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="marchas">Número de Marchas</label>
+                    <input type="number" id="marchas" placeholder="Ex: 5, 6, 7" min="3" max="10">
+                </div>
+
+                <div class="field-group">
+                    <label for="alimentacao">Sistema de Alimentação</label>
+                    <select id="alimentacao">
+                        <option value="">Qualquer</option>
+                        <option value="Carburador">Carburador</option>
+                        <option value="Inje%E7%E3o+monoponto">Injeção monoponto</option>
+                        <option value="Inje%E7%E3o+multiponto">Injeção multiponto</option>
+                        <option value="Inje%E7%E3o+direta">Injeção direta</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <label for="embreagem">Tipo de Embreagem</label>
+                    <select id="embreagem">
+                        <option value="">Qualquer</option>
+                        <option value="Embreagem+monodisco+a+seco">Embreagem monodisco a seco</option>
+                        <option value="Conversor+de+torque">Conversor de torque</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Desempenho -->
+            <div class="section">
+                <div class="section-title">Desempenho</div>
+                
+                <div class="field-group">
+                    <label>Relação Peso/Potência (Kg/cv)</label>
+                    <div class="range-group">
+                        <input type="number" id="pesopotmin" placeholder="Mínimo">
+                        <input type="number" id="pesopotmax" placeholder="Máximo">
+                    </div>
+                    <div class="help-text">Menor = mais potente para o peso</div>
+                </div>
+
+                <div class="field-group">
+                    <label>Relação Peso/Torque (Kg/kgfm)</label>
+                    <div class="range-group">
+                        <input type="number" id="pesotorqmin" placeholder="Mínimo">
+                        <input type="number" id="pesotorqmax" placeholder="Máximo">
+                    </div>
+                    <div class="help-text">Menor = mais torque para o peso</div>
+                </div>
+
+                <div class="field-group">
+                    <label for="alturasolo">Altura do Solo Mínima (mm)</label>
+                    <input type="number" id="alturasolo" placeholder="Ex: 120, 150, 200">
+                </div>
+
+                <div class="field-group">
+                    <label for="direcao">Tipo de Direção</label>
+                    <select id="direcao">
+                        <option value="">Qualquer</option>
+                        <option value="N%E3o+assistida">Não assistida</option>
+                        <option value="Hidr%E1ulica">Hidráulica</option>
+                        <option value="El%E9trica">Elétrica</option>
+                        <option value="Eletro-hidr%E1ulica">Eletro-hidráulica</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Consumo e Autonomia -->
+            <div class="section">
+                <div class="section-title">Consumo e Autonomia</div>
+                
+                <div class="field-group">
+                    <label for="consumoUrbano">Consumo Urbano Mínimo (Km/L)</label>
+                    <input type="number" id="consumoUrbano" placeholder="Ex: 8, 10, 12" step="0.1">
+                </div>
+
+                <div class="field-group">
+                    <label for="consumoEstrada">Consumo Estrada Mínimo (Km/L)</label>
+                    <input type="number" id="consumoEstrada" placeholder="Ex: 10, 12, 14" step="0.1">
+                </div>
+
+                <div class="field-group">
+                    <label for="tanque">Capacidade do Tanque Mínima (L)</label>
+                    <input type="number" id="tanque" placeholder="Ex: 40, 50, 60">
+                </div>
+
+                <div class="field-group">
+                    <label for="autonomiaCidade">Autonomia Urbana Mínima (Km)</label>
+                    <input type="number" id="autonomiaCidade" placeholder="Ex: 350, 450, 550">
+                </div>
+
+                <div class="field-group">
+                    <label for="autonomiaEstrada">Autonomia Estrada Mínima (Km)</label>
+                    <input type="number" id="autonomiaEstrada" placeholder="Ex: 450, 550, 650">
+                </div>
+            </div>
+
+            <!-- Equipamentos -->
+            <div class="section full-width">
+                <div class="section-title">Equipamentos Obrigatórios</div>
+                
+                <div class="checkbox-grid">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq01">
+                        <span>Ar condicionado</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq69">
+                        <span>Direção assistida</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq29">
+                        <span>Freios ABS</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq11">
+                        <span>Airbags frontais</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq12">
+                        <span>Airbags laterais</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq19">
+                        <span>Controle de estabilidade</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq20">
+                        <span>Controle de tração</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq75">
+                        <span>Câmbio automático</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq82">
+                        <span>Sistema start/stop</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq21">
+                        <span>Vidros diant. elétricos</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq22">
+                        <span>Vidros tras. elétricos</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq42">
+                        <span>Travamento central</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq09">
+                        <span>Alarme antifurto</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq14">
+                        <span>Câmera de ré</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq40">
+                        <span>Sensor de estacionamento</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq16">
+                        <span>Computador de bordo</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq30">
+                        <span>Bluetooth</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq65">
+                        <span>Conexão USB</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq100">
+                        <span>Espelhamento de tela</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq34">
+                        <span>Rádio</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq25">
+                        <span>Faróis de LED</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq26">
+                        <span>Faróis de neblina</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq31">
+                        <span>Limpador traseiro</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq24">
+                        <span>Encosto cabeça p/ todos</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq44">
+                        <span>Banco traseiro bipartido</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="eq60">
+                        <span>Banco traseiro rebatível</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Ordenação -->
+            <div class="section">
+                <div class="section-title">Ordenação</div>
+                
+                <div class="field-group">
+                    <label for="ordem">Ordenar Resultados Por</label>
+                    <select id="ordem">
+                        <option value="">Padrão do site</option>
+                        <option value="3">Melhor peso/potência</option>
+                        <option value="27">Melhor peso/torque</option>
+                        <option value="8">Melhor consumo rodoviário</option>
+                        <option value="9">Melhor consumo urbano</option>
+                        <option value="12">Mais baratos</option>
+                        <option value="20">Mais caros</option>
+                        <option value="13">Mais novos</option>
+                        <option value="91">Mais antigos</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- URL Gerada -->
+        <div class="url-section">
+            <h3>URL de Busca Gerada</h3>
+            <div class="url-display" id="urlDisplay">
+                https://www.carrosnaweb.com.br/catalogo.asp?submit1=Buscar
+            </div>
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="abrirBusca()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    Abrir Busca
+                </button>
+                <button class="btn btn-secondary" onclick="copiarURL()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                    Copiar URL
+                </button>
+                <button class="btn btn-danger" onclick="limparCampos()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                    Limpar Tudo
+                </button>
+            </div>
+
+            <div class="qr-code-section">
+                <div class="qr-code-container">
+                    <img id="qrCode" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https%3A%2F%2Fwww.carrosnaweb.com.br%2Fcatalogo.asp%3Fsubmit1%3DBuscar" alt="QR Code">
+                </div>
+                <span class="qr-code-label">Escaneie para abrir no celular</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Mapeamento de campos para parâmetros da URL
+        const camposTexto = [
+            'fabricante', 'varnome', 'codigoMotor', 'plataforma', 'embreagem', 
+            'direcao', 'alimentacao'
+        ];
+        
+        const camposNumero = [
+            'valini', 'valfim', 'anoini', 'anofim', 'geracao', 'portas', 
+            'passageiros', 'portamalas', 'cilini', 'cilfim', 'pesopotmin', 
+            'pesopotmax', 'pesotorqmin', 'pesotorqmax', 'consumoUrbano', 
+            'consumoEstrada', 'tanque', 'autonomiaCidade', 'autonomiaEstrada',
+            'marchas', 'alturasolo'
+        ];
+        
+        const camposSelect = [
+            'vendaOficial', 'proced', 'config', 'porte', 'combustivel', 
+            'cambio', 'ordem'
+        ];
+        
+        const camposCheckbox = [
+            'eq01', 'eq09', 'eq11', 'eq12', 'eq14', 'eq16', 'eq19', 'eq20',
+            'eq21', 'eq22', 'eq24', 'eq25', 'eq26', 'eq29', 'eq30', 'eq31',
+            'eq34', 'eq40', 'eq42', 'eq44', 'eq60', 'eq65', 'eq69', 'eq75',
+            'eq82', 'eq100'
+        ];
+
+        // Função para gerar a URL
+        function gerarURL() {
+            const baseURL = 'https://www.carrosnaweb.com.br/catalogo.asp?';
+            const params = [];
+
+            // Campos de texto
+            camposTexto.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento && elemento.value.trim()) {
+                    params.push(`${campo}=${encodeURIComponent(elemento.value.trim())}`);
+                }
+            });
+
+            // Campos numéricos
+            camposNumero.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento && elemento.value) {
+                    params.push(`${campo}=${elemento.value}`);
+                }
+            });
+
+            // Campos select
+            camposSelect.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento && elemento.value) {
+                    // Tratamento especial para combustível (sem encoding)
+                    if (campo === 'combustivel') {
+                        params.push(`combustível=${elemento.value}`);
+                    } else {
+                        params.push(`${campo}=${elemento.value}`);
+                    }
+                }
+            });
+
+            // Campos checkbox
+            camposCheckbox.forEach(campo => {
+                const elemento = document.getElementById(campo);
+                if (elemento && elemento.checked) {
+                    params.push(`${campo}=on`);
+                }
+            });
+
+            // Sempre adiciona submit1
+            params.push('submit1=Buscar');
+
+            const urlFinal = baseURL + params.join('&');
+            document.getElementById('urlDisplay').textContent = urlFinal;
+            
+            // Calcula tamanho dinâmico do QR Code baseado no tamanho da URL
+            // URLs maiores precisam de QR codes maiores para manter legibilidade
+            const urlLength = urlFinal.length;
+            let qrSize;
+            
+            if (urlLength < 150) {
+                qrSize = 180;
+            } else if (urlLength < 300) {
+                qrSize = 220;
+            } else if (urlLength < 500) {
+                qrSize = 280;
+            } else if (urlLength < 800) {
+                qrSize = 340;
+            } else {
+                qrSize = 400;
+            }
+            
+            // Atualiza o QR Code
+            const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${qrSize}x${qrSize}&data=${encodeURIComponent(urlFinal)}`;
+            const qrImg = document.getElementById('qrCode');
+            qrImg.src = qrCodeUrl;
+            qrImg.width = qrSize;
+            qrImg.height = qrSize;
+            
+            return urlFinal;
+        }
+
+        // Adicionar listeners para atualizar URL em tempo real
+        function adicionarListeners() {
+            const todosInputs = document.querySelectorAll('input, select');
+            todosInputs.forEach(input => {
+                input.addEventListener('input', gerarURL);
+                input.addEventListener('change', gerarURL);
+            });
+        }
+
+        // Função para abrir a busca
+        function abrirBusca() {
+            const url = gerarURL();
+            window.open(url, '_blank');
+        }
+
+        // Função para copiar URL
+        function copiarURL() {
+            const url = gerarURL();
+            navigator.clipboard.writeText(url).then(() => {
+                mostrarToast('URL copiada para a área de transferência!');
+            }).catch(() => {
+                // Fallback para navegadores mais antigos
+                const textarea = document.createElement('textarea');
+                textarea.value = url;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                mostrarToast('URL copiada para a área de transferência!');
+            });
+        }
+
+        // Função para limpar todos os campos
+        function limparCampos() {
+            const todosInputs = document.querySelectorAll('input[type="text"], input[type="number"]');
+            todosInputs.forEach(input => input.value = '');
+            
+            const todosSelects = document.querySelectorAll('select');
+            todosSelects.forEach(select => select.selectedIndex = 0);
+            
+            const todosCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+            todosCheckboxes.forEach(checkbox => checkbox.checked = false);
+            
+            gerarURL();
+            mostrarToast('Todos os campos foram limpos!');
+        }
+
+        // Função para mostrar toast
+        function mostrarToast(mensagem) {
+            const toast = document.getElementById('toast');
+            toast.textContent = mensagem;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            adicionarListeners();
+            gerarURL();
+        });
+    </script>
+</body>
+</html>
+

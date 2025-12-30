@@ -1,0 +1,39 @@
+name: Deploy to Fastmail
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy to Fastmail via WebDAV
+        run: |
+          # Criar diretório remoto (ignora erro se já existir)
+          curl -s -u "${{ secrets.WEBDAV_USER }}:${{ secrets.WEBDAV_PASS }}" \
+            -X MKCOL "${{ secrets.WEBDAV_URL }}/${{ secrets.FASTMAIL_PATH }}/" || true
+          
+          # Upload de cada arquivo
+          for file in $(find . -type f ! -path './.git/*' ! -name '.gitignore' ! -name '*.md' ! -name 'buscador-tema-*.html'); do
+            # Remove o ./ do início do caminho
+            filepath="${file#./}"
+            
+            # Cria subdiretórios se necessário
+            dir=$(dirname "$filepath")
+            if [ "$dir" != "." ]; then
+              curl -s -u "${{ secrets.WEBDAV_USER }}:${{ secrets.WEBDAV_PASS }}" \
+                -X MKCOL "${{ secrets.WEBDAV_URL }}/${{ secrets.FASTMAIL_PATH }}/$dir/" || true
+            fi
+            
+            # Upload do arquivo
+            curl -s -u "${{ secrets.WEBDAV_USER }}:${{ secrets.WEBDAV_PASS }}" \
+              -T "$file" "${{ secrets.WEBDAV_URL }}/${{ secrets.FASTMAIL_PATH }}/$filepath"
+            echo "Uploaded: $filepath"
+          done
+
